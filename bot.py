@@ -1,5 +1,19 @@
+# --- Flask-заглушка для Koyeb health check ---
 import threading
 from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Bot is running"
+
+def run_flask():
+    app.run(host="0.0.0.0", port=8000)
+
+threading.Thread(target=run_flask).start()
+# --- конец заглушки ---
+
 import telebot
 from telebot import types
 import json
@@ -8,8 +22,8 @@ import os
 
 # ==== НАСТРОЙКИ ====
 TOKEN = "8204880484:AAHZKpUgPBl_hJj_ZQ8HaEczn1dg6njuxZo"
-ADMIN_ID = 7816374758  # 🔹 замени на свой Telegram ID
-CHANNEL_USERNAME = "@wnref"  # 🔹 например @SpinFortunaNews
+ADMIN_ID = 7816374758
+CHANNEL_USERNAME = "@wnref"
 SUPPORT_LINK = "@winiksona"
 
 bot = telebot.TeleBot(TOKEN)
@@ -213,7 +227,7 @@ def stats(message):
     users = len(data)
     start_date = min([d["joined"] for d in data.values()]) if users else "Сегодня"
     markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton("🔥 Хочу такого же бота", url="https://t.me/твоя_ссылка"))
+    markup.add(types.InlineKeyboardButton("🔥 Хочу такого же бота", url="https://t.me/winikson"))
     text = f"""📊 Статистика
 Бот запущен: {start_date}
 Всего пользователей: {users}
@@ -234,5 +248,4 @@ def admin_panel(message):
     bot.send_message(message.chat.id, "Админ панель:", reply_markup=markup)
 
 print("🤖 Bot started...")
-bot.infinity_polling(skip_pending=True)
-
+bot.infinity_polling(timeout=10, long_polling_timeout=5, skip_pending=True)
